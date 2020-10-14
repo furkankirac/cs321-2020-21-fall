@@ -16,11 +16,10 @@ char k = 'A';
 
 #include <iostream>
 
-
 // ctor of a complex type (struct)
 struct Student
 {
-    static int count = 0;
+    static int count;
 
     char* name;
     int age;
@@ -53,6 +52,8 @@ struct Student
     }
 };
 
+int Student::count = 0;
+
 // write a ctor of a struct instance as a free function (imperative programming paradigm)
 // free-function
 void student_ctor(Student& s, const char* name_, int age_, const char* origin_, float gpa_)
@@ -68,10 +69,10 @@ int main(int argc, char* argv[])
 {
     {
         Student s1("Furkan", 42, "Istanbul", 3.0f);
-        std::cout << "Student instance count = " << student_count << std::endl;
+        std::cout << "Student instance count = " << Student::count << std::endl;
 
         Student s2("Hasan", 37, "Bursa", 3.2f);
-        std::cout << "Student instance count = " << student_count << std::endl;
+        std::cout << "Student instance count = " << Student::count << std::endl;
     //    student_ctor(s1, "Furkan", 42, "Istanbul", 3.0f);
     //    student_ctor(s2, "Hasan", 37, "Bursa", 3.2f);
 
@@ -81,7 +82,7 @@ int main(int argc, char* argv[])
         s1.destruct();
     }
 
-    std::cout << "Student instance count = " << student_count << std::endl;
+    std::cout << "Student instance count = " << Student::count << std::endl;
 
     return 0;
 }
