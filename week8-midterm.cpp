@@ -134,7 +134,7 @@ void print(const std::map<Key, Value>& m)
     }
 }
 
-// define a dummpy Print type. Instantiate a variable of it, and call it PRINT
+// define a dummy Print type. Instantiate a variable of it, and call it PRINT
 // PRINT variables only specialty is that its type is Print.
 // We will use its type for distinguishing it in different scenarios, as shown in below code
 struct Print { };

@@ -23,21 +23,11 @@ struct Employee
     float salary;
 };
 
-// a concept required to distinguish a typename if it is a container or not
-// any type T with whose instance a we can safely call a.begin(), a.end(), a.size() is a container
 template<typename T>
-concept AnyContainer = requires(T a) {
-    a.begin();
-    a.end();
-    a.size();
-};
+concept AnyContainer = requires(T a) { a.begin(); a.end(); a.size(); };
 
 template<typename T>
-concept AnyMap = requires(T a) {
-    AnyContainer<T>;
-    a.begin()->first;
-    a.begin()->second;
-};
+concept AnyMap = requires(T a) { AnyContainer<T>; a.begin()->first; a.begin()->second; };
 
 // algorithms
 
@@ -88,8 +78,6 @@ auto transform(const Container& container_, auto func)
 }
 
 // Reverse algorithm for any type of containers
-//template<typename Container>
-//template<AnyContainer Container>
 auto reverse(const AnyContainer auto& container)
 {
     auto c = container;
@@ -111,9 +99,6 @@ std::ostream& operator<<(std::ostream& s, const Employee& e)
     return s;
 }
 
-// print function overload set starts here
-
-// template of print functions suitable for any kind of type
 template<typename T>
 void print(const T& value)
 {
@@ -141,10 +126,9 @@ void print(const T& value)
     {
         std::cout << value << std::endl;
     }
-
 }
 
-// define a dummpy Print type. Instantiate a variable of it, and call it PRINT
+// define a dummy Print type. Instantiate a variable of it, and call it PRINT
 // PRINT variables only specialty is that its type is Print.
 // We will use its type for distinguishing it in different scenarios, as shown in below code
 struct Print { };
@@ -163,32 +147,45 @@ template<AnyContainer T, typename Lambda> auto operator|(const T& c, Lambda lamb
 // if - operator is seen before a variable of type that suits AnyContainer concept
 template<AnyContainer T> auto operator-(const T& c) { return reverse(c); }
 
-//auto get_name_original(const auto& e) { return e.name; }
+// higher order function (lifted functions)
+// these functions are configured once and then called multiple times
+// especially look at lt and eq below
 
+// getter methods for any type. Although designed for Employee, they work with any class that have these attributes
 auto get_name() { return [](const auto& e) { return e.name; }; }
 auto get_salary() { return [](const auto& e) { return e.salary; }; }
 auto get_gender() { return [](const auto& e) { return e.gender; }; }
 
+// returned function is configured with "value", then waits for a "v" to check for being "less than"
 auto lt(auto value) { return [value](auto v) { return v < value; }; }
+
+// returned function is configured with "value1", then waits for a "value2" to check for being "equalness"
 auto eq(auto value1) { return [value1](auto value2) { return value1 == value2; }; }
 
+// given any two function objects (lambdas) f1 and f2
+// return a lambda that waits for an "item" of any type
+// when item arrives, we both call f1 and f2 with item.
+// if both returns true, we return true, else we return false
 auto both_of(auto f1, auto f2) {
     return [f1, f2](const auto& item) {
         return f1(item) && f2(item);
     };
 }
 
+// we overload logical and (&&) operator so that it applies both_of to its "left" and "right" parameters
 auto operator&&(auto f1, auto f2) {
     return both_of(f1, f2);
 }
 
-auto compose(auto f, auto g) // FoG
+// Mathematical F of G (FoG)
+auto compose(auto f, auto g)
 {
     return [f, g](auto x) {
         return g(f(x));
     };
 }
 
+// we overload | operator for binding two lambdas with compose
 auto operator |(auto f, auto g) { return compose(f, g); }
 
 int main(int, char* [])
@@ -210,61 +207,11 @@ int main(int, char* [])
 //    if(lt8000(sal))
 //        std::cout << "Less than 9000!" << std::endl;
 
-
     std::cout << "Female employees who take less salary than 9000TL:" << std::endl;
 //    print(filter(employees, (get_salary()|lt(9000) && (get_gender()|eq(Female)) )));
     employees & (get_salary()|lt(9000) && (get_gender()|eq(Female))) | PRINT;
     print(filter(employees, [](const Employee& e) { return e.salary < 9000 && e.gender == Female; }));
     // [Elif, Female, 28, 6350TL]
-
-//    // Q6a) (15pts) Create a group_by algorithm that can group elements of a container by a specific criterion
-//    // Q6b) (5pts) Group employees by age ranges of 10 year increments by filling in lambda_group below
-//    // Q6c) (5pts) Make the grouped result printable via print(grouped) as below
-//    std::cout << "Employees grouped by age ranges of 10 year increments:" << std::endl;
-//    auto lambda_group = [](const Employee& e) {
-//        auto a = e.age/10*10; // note: division of integer truncates the result.
-//        auto b = a+9;
-//        return std::to_string(a) + ".." + std::to_string(b);
-//    };
-//    auto grouped = group_by(employees, lambda_group);
-//    print(grouped);
-//    // <20..29>: [Elif, Female, 28, 6350TL]
-//    // <30..39>: [Fatih, Male, 35, 8500TL]
-//    // <40..49>: [Erkin, Male, 43, 9500TL]; [Mehmet, Male, 46, 10500TL]; [Melis, Female, 48, 12500TL]
-
-//    // Q7a) (10pts) Create a transform algorithm that can work on "grouped" variable.
-//    // Q7b) (5pts) Write necessary transformation lambda for aggregating each group's element count.
-//    // Q7c) (5pts) Make the grouped and transformed result printable via print(grouped_transformed) as below
-//    std::cout << "Number of employees available in age ranges of 10 year increments:" << std::endl;
-//    auto lambda_transform = []<typename T>(const T& pair) {
-//        using Key = decltype(pair.first);
-//        using Value = size_t;
-//        return std::pair<Key, Value>{pair.first, pair.second.size()};
-//    };
-//    auto grouped_transformed = transform(grouped, lambda_transform);
-//    print(grouped_transformed);
-//    // <20..29>: 1
-//    // <30..39>: 1
-//    // <40..49>: 3
-
-//    // Q8) (10pts) Make the below code work as the same as Q7's code block
-//    std::cout << "Number of employees available in age ranges of 10 year increments (again):" << std::endl;
-//    grouped | lambda_transform | PRINT;
-//    // <20..29>: 1
-//    // <30..39>: 1
-//    // <40..49>: 3
-
-//    // Q9) (5pts) Make below line work
-//    std::array<int, 3>{10, 20, 30} | [](int a) { return a*a; } | PRINT;
-//    // [100]; [400]; [900]
-
-//    // Q10) Overload "operator-" to get the reverse of passed container
-//    // Q10a) (5pts) Make it work with array containers with the result pipable to PRINT as below
-//    // Q10b) (5pts) Make it work with other containers with the result pipable to PRINT as below
-//    -std::array<float, 4>{1.1, 2.2, 3.3, 4.4} | PRINT;
-//    // [4.4]; [3.3]; [2.2]; [1.1]
-//    -std::vector<float>{1.1, 2.2, 3.3, 4.4} | PRINT;
-//    // [4.4]; [3.3]; [2.2]; [1.1]
 
     return 0;
 }
