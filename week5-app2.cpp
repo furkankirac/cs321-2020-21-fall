@@ -49,7 +49,7 @@ void print(const vector<int>& a)
 
 int main(int argc, char* argv[])
 {
-    auto student = Student{.age=20, .gpa=4.0f};
+    auto student = Student{.gpa=4.0f, .age=20};
     student.print();
 
 //    auto v = vector<int>(3); // inits a vector with 3 elements, the elements are default constructed

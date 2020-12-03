@@ -1,7 +1,7 @@
 #include <iostream>
 //#include <stdio.h>
 
-void my_strcpy(char* dest_ptr, char* src_ptr)
+void my_strcpy(char* dest_ptr, const char* src_ptr)
 {
     while(*src_ptr != 0)
         *dest_ptr++ = *src_ptr++;
@@ -13,7 +13,7 @@ struct Employee
     int age;
     char name[20];
 
-    Employee(int salary_, int age_, char* name_)
+    Employee(int salary_, int age_, const char* name_)
     {
         salary = salary_;
         age = age_;

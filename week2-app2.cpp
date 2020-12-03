@@ -15,6 +15,7 @@ char k = 'A';
 // static variables covered in next lecture
 
 #include <iostream>
+#include <cstring>
 
 // ctor of a complex type (struct)
 struct Student
