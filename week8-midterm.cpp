@@ -39,7 +39,7 @@ template<typename Container, typename Func>
 auto group_by(const Container& container, Func func)
 {
     using Key = decltype(func(*container.begin()));
-    using Value = std::vector<typename std::remove_reference<decltype(*container.begin())>::type>;
+    using Value = std::vector<typename std::remove_cvref<decltype(*container.begin())>::type>;
     auto m = std::map<Key, Value>();
     for(const auto& item : container)
         m[func(item)].push_back(item);
