@@ -31,17 +31,17 @@ struct Value
 
 int main(int, char* [])
 {
-    auto m1 = std::map<int, Value<std::string>>{
-        {10, {"Ten"}},
-        {12, {"Twelve"}},
-        {20, {"Twenty"}},
-    };
-    print(m1);
+//    auto m1 = std::map<int, Value<std::string>>{
+//        {10, {"Ten"}},
+//        {12, {"Twelve"}},
+//        {20, {"Twenty"}},
+//    };
+//    print(m1);
 
-    auto m2 = std::map<Value<double>, char>{
-        {{3.14}, 'p'},
-        {{2.72}, 'e'},
-    };
-    print(m2);
+//    auto m2 = std::map<Value<double>, char>{
+//        {{3.14}, 'p'},
+//        {{2.72}, 'e'},
+//    };
+//    print(m2);
     return 0;
 }
