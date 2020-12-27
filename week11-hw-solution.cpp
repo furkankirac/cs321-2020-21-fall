@@ -59,7 +59,18 @@ auto higher_than(auto what) { return [=](auto a) { return higher_than_(a, what);
 template<IsContainer Container>
 auto filter_(const Container& container, auto lambda)
 {
-    auto c = Container();
+    auto c = Container(container.size());
+    auto it = c.begin();
+    for(const auto& item : container)
+        if(lambda(item))
+            *it++ = item;
+    return c;
+}
+
+template<typename T, size_t sz>
+auto filter_(const std::array<T, sz>& container, auto lambda)
+{
+    auto c = std::array<T, sz>();
     auto it = c.begin();
     for(const auto& item : container)
         if(lambda(item))
@@ -155,6 +166,14 @@ int main(int, char* [])
     auto PRINT = printer();
 
     std::array<int, 6>{1, 50, -3, 5, -10, 100}
+        | PRINT
+        | reverse() | PRINT
+        | filter(higher_than(0)) | PRINT
+        | take<3>() | PRINT
+        | transform(add(10)) | PRINT
+        | accumulator(adder, 0) | PRINT;
+
+    std::vector<int>{1, 50, -3, 5, -10, 100}
         | PRINT
         | reverse() | PRINT
         | filter(higher_than(0)) | PRINT
