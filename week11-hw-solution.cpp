@@ -173,7 +173,7 @@ int main(int, char* [])
         | transform(add(10)) | PRINT
         | accumulator(adder, 0) | PRINT;
 
-    std::vector<int>{1, 50, -3, 5, -10, 100}
+    std::list<int>{1, 50, -3, 5, -10, 100}
         | PRINT
         | reverse() | PRINT
         | filter(higher_than(0)) | PRINT
